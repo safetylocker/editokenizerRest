@@ -1,4 +1,4 @@
-package editokenizer;
+package editokenizerRest;
 
 public class EdiDocument {
 
