@@ -1,11 +1,11 @@
 package editokenizerRest;
 
-public class EdiDocument {
+public class TokenizerDocument {
 
     private final long id;
     private final String content;
 
-    public EdiDocument(long id, String content) {
+    public TokenizerDocument(long id, String content) {
         this.id = id;
         this.content = content;
     }
