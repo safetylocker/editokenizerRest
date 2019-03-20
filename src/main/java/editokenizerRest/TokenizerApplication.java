@@ -1,12 +1,20 @@
 package editokenizerRest;
 
+import com.securitybox.ediparser.EDIFACT;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.security.NoSuchAlgorithmException;
+
 @SpringBootApplication
 public class TokenizerApplication {
-
+    public static EDIFACT edifact;
     public static void main(String[] args) {
+        try {
+            edifact = new EDIFACT();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         SpringApplication.run(TokenizerApplication.class, args);
     }
 }
