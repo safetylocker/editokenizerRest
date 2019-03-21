@@ -61,7 +61,7 @@ public class TokenizerContoller {
     //request message must contain the message type, segments to be tokenized as a parameters
     //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
     public TokenizerDocument detokenize(@RequestParam(value="msgType") String msgType,
-                                      @RequestParam(value="elementsToDeTokenize",required = true) JSONArray elementsToTokenize,
+                                      @RequestParam(value="elementsToDeTokenize",required = true) JSONArray elementsToDeTokenize,
                                       @RequestParam(value="senderIdList",required = false) ArrayList senderIdList,
                                       @RequestParam(value="receiverIdList",required = false) ArrayList receiverIdList,
                                       @RequestParam(value="operation",required = true)String operation,
