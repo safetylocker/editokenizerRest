@@ -5,11 +5,8 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.securitybox.constants.Constants;
-import com.securitybox.ediparser.EDIFACT;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -17,74 +14,54 @@ import static editokenizerRest.TokenizerApplication.edifact;
 
 @RestController
 @EnableWebMvc
+@RequestMapping("/tokenizer")
 public class TokenizerContoller {
 
     private static final String template = "EDI Tokenizer, %s!";
     private final AtomicLong counter = new AtomicLong();
+    private JSONArray elementsToTokenize;
+    private ArrayList senderIdList;
+    private ArrayList receiverIdList;
     private String msgBody;
 
 
 
     @PostMapping
-    @RequestMapping("/tokenizer/edidoc")
-    public TokenizerDocument greeting(@RequestParam(value="msgType") String msgType,
+    @RequestMapping("/edidoc")
+    //request message must contain the message type, segments to be tokenized as a parameters
+    //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
+    public TokenizerDocument tokenize(@RequestParam(value="msgType") String msgType,
+                                      @RequestParam(value="elementsToTokenize",required = true) JSONArray elementsToTokenize,
+                                      @RequestParam(value="senderIdList",required = false) ArrayList senderIdList,
+                                      @RequestParam(value="receiverIdList",required = false) ArrayList receiverIdList,
                                       @RequestBody() String msgBody) {
-
+        //map inbound reqest parameters to instance parameters
+        this.elementsToTokenize = elementsToTokenize;
+        this.senderIdList = senderIdList;
+        this.receiverIdList = receiverIdList;
         this.msgBody = msgBody;
-        System.out.println("Recevied Message : " + this.msgBody);
-        callEDIFACT(this.msgBody);
+
+        //log for debugging...
+        System.out.println("Receieved Message : " + this.msgBody);
+        System.out.println("Receieved elemnts to be tokenized : " + this.elementsToTokenize);
+        System.out.println("Receieved sender id list : " + this.senderIdList);
+        System.out.println("Receieved receiver id list : " + this.receiverIdList);
+
+        //call EDIFACT rokenizer service..
         return new TokenizerDocument(counter.incrementAndGet(),
-                String.format(template, callEDIFACT(this.msgBody)));
+                String.format(template, callEDIFACT(this.msgBody,this.elementsToTokenize,senderIdList,receiverIdList)));
     }
 
-    private String callEDIFACT(String input){
-        JSONArray objectToTokenized= new JSONArray();
-        JSONObject jsonObject = new JSONObject();
+    private String callEDIFACT(String input, JSONArray elementsToTokenize, ArrayList senderIdList, ArrayList receiverIdList){
+        String response="";
         try {
-            jsonObject.put(Constants.EDIFACT_SEGMENT_NUMBER,16);
-            jsonObject.put(Constants.EDIFACT_DATA_ELEMENT_NUMBER,5);
-            jsonObject.put(Constants.EDIFACT_DATA_ELEMENT_POSITION,1);
-            jsonObject.put(Constants.EDIFACT_DATA_ELEMENT_LENGTH,30);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        objectToTokenized.put(jsonObject);
-        String tmp="";
-
-        try {
-            jsonObject.put(Constants.EDIFACT_SEGMENT_NUMBER,16);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            jsonObject.put(Constants.EDIFACT_DATA_ELEMENT_NUMBER,5);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            jsonObject.put(Constants.EDIFACT_DATA_ELEMENT_POSITION,1);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            jsonObject.put(Constants.EDIFACT_DATA_ELEMENT_LENGTH,30);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ArrayList<String> sender = new ArrayList<String>();
-        sender.add("clientA");
-        ArrayList<String> receiver = new ArrayList<String>();
-        receiver.add("clientB");
-        objectToTokenized.put(jsonObject);
-        try {
-            tmp = edifact.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE,objectToTokenized,input,sender,receiver);
+            response = edifact.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE,elementsToTokenize,input,senderIdList,receiverIdList);
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        return tmp;
+        return response;
     }
 
 

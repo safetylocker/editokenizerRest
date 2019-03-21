@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="ediTokenizer">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../ediTokenizer/ediTokenizer/out/artifacts/ediTokenizer_jar/ediTokenizer.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../ediTokenizer/ediTokenizer/out/artifacts/ediTokenizer_jar/ediTokenizer.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../ediTokenizer/ediTokenizer/out/artifacts/ediTokenizer_jar/ediTokenizer.jar!/" />
+    </SOURCES>
+  </library>
+</component>
