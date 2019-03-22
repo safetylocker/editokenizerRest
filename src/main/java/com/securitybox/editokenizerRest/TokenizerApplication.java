@@ -1,4 +1,4 @@
-package editokenizerRest;
+package com.securitybox.editokenizerRest;
 
 import com.securitybox.ediparser.EDIFACT;
 import org.springframework.boot.SpringApplication;

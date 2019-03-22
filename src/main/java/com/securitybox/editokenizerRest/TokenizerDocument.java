@@ -1,4 +1,4 @@
-package editokenizerRest;
+package com.securitybox.editokenizerRest;
 
 public class TokenizerDocument {
 

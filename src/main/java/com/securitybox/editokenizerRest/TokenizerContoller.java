@@ -1,20 +1,22 @@
-package editokenizerRest;
+package com.securitybox.editokenizerRest;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.securitybox.constants.Constants;
+import io.swagger.annotations.Api;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static editokenizerRest.TokenizerApplication.edifact;
+import static com.securitybox.editokenizerRest.TokenizerApplication.edifact;
 
 @RestController
 @EnableWebMvc
 @RequestMapping("/tokenizer")
+@Api(value="Tokenization REST API.", description="API operation supported for tokenization system")
 public class TokenizerContoller {
 
     private static final String template = "EDI Tokenizer, %s!";
@@ -28,7 +30,7 @@ public class TokenizerContoller {
 
 
     @PostMapping
-    @RequestMapping("/tokenize")
+    @RequestMapping(value = "/tokenize", method = RequestMethod.POST)
     //request message must contain the message type, segments to be tokenized as a parameters
     //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
     public TokenizerDocument tokenize(@RequestParam(value="msgType") String msgType,
@@ -57,7 +59,7 @@ public class TokenizerContoller {
 
 
     @PostMapping
-    @RequestMapping("/de-tokenize")
+    @RequestMapping(value = "/de-tokenize",method = RequestMethod.POST)
     //request message must contain the message type, segments to be tokenized as a parameters
     //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
     public TokenizerDocument detokenize(@RequestParam(value="msgType") String msgType,
