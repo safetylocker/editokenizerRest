@@ -18,10 +18,12 @@ import static springfox.documentation.builders.PathSelectors.regex;
 public class SwaggerConfig extends WebMvcConfigurationSupport {
     @Bean
     public Docket productApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()                 .apis(RequestHandlerSelectors.basePackage("editokenizerRest"))
-                .paths(regex("/tokernizer.*"))
-                .build();
+        //return new Docket(DocumentationType.SWAGGER_2)
+                //.select()                 .apis(RequestHandlerSelectors.basePackage("editokenizerRest"))
+                //.paths(regex("/tokernizer.*"))
+                //.build();
+        return new Docket(DocumentationType.SWAGGER_2).select()
+                .apis(RequestHandlerSelectors.basePackage("editokenizerRest")).build();
 
     }
     @Override
