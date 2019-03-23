@@ -6,6 +6,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.securitybox.constants.Constants;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.web.bind.annotation.*;
@@ -19,72 +21,16 @@ import static com.securitybox.editokenizerRest.TokenizerApplication.edifact;
 @Api(value="Tokenization REST API.", description="API operation supported for tokenization system")
 public class TokenizerContoller {
 
-    private static final String template = "EDI Tokenizer, %s!";
+    private static final String template = "%s!";
     private final AtomicLong counter = new AtomicLong();
     private JSONArray elementsToTokenize,elementsToDeTokenize;
     private ArrayList senderIdList;
     private ArrayList receiverIdList;
-    private String msgBody,operation;
+    private String document;
 
 
 
 
-    @PostMapping
-    @RequestMapping(value = "/tokenize", method = RequestMethod.POST)
-    //request message must contain the message type, segments to be tokenized as a parameters
-    //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
-    public TokenizerDocument tokenize(@RequestParam(value="msgType") String msgType,
-                                      @RequestParam(value="elementsToTokenize",required = true) JSONArray elementsToTokenize,
-                                      @RequestParam(value="senderIdList",required = false) ArrayList senderIdList,
-                                      @RequestParam(value="receiverIdList",required = false) ArrayList receiverIdList,
-                                      @RequestParam(value="operation",required = true) String operation,
-                                      @RequestBody() String msgBody) {
-        //map inbound reqest parameters to instance parameters
-        this.elementsToTokenize = elementsToTokenize;
-        this.senderIdList = senderIdList;
-        this.receiverIdList = receiverIdList;
-        this.msgBody = msgBody;
-        this.operation = operation;
-
-        //log for debugging...
-        System.out.println("Receieved Message : " + this.msgBody);
-        System.out.println("Receieved elemnts to be tokenized : " + this.elementsToTokenize);
-        System.out.println("Receieved sender id list : " + this.senderIdList);
-        System.out.println("Receieved receiver id list : " + this.receiverIdList);
-
-        //call EDIFACT rokenizer service..
-        return new TokenizerDocument(counter.incrementAndGet(),
-                String.format(template, EdifactTokenizer(this.msgBody,this.elementsToTokenize,senderIdList,receiverIdList,operation)));
-    }
-
-
-    @PostMapping
-    @RequestMapping(value = "/de-tokenize",method = RequestMethod.POST)
-    //request message must contain the message type, segments to be tokenized as a parameters
-    //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
-    public TokenizerDocument detokenize(@RequestParam(value="msgType") String msgType,
-                                      @RequestParam(value="elementsToDeTokenize",required = true) JSONArray elementsToDeTokenize,
-                                      @RequestParam(value="senderIdList",required = false) ArrayList senderIdList,
-                                      @RequestParam(value="receiverIdList",required = false) ArrayList receiverIdList,
-                                      @RequestParam(value="operation",required = true)String operation,
-                                      @RequestBody() String msgBody) {
-        //map inbound reqest parameters to instance parameters
-        this.elementsToDeTokenize = elementsToDeTokenize;
-        this.senderIdList = senderIdList;
-        this.receiverIdList = receiverIdList;
-        this.msgBody = msgBody;
-        this.operation = operation;
-
-        //log for debugging...
-        System.out.println("Receieved Message : " + this.msgBody);
-        System.out.println("Receieved elemnts to be de-tokenized : " + this.elementsToDeTokenize);
-        System.out.println("Receieved sender id list : " + this.senderIdList);
-        System.out.println("Receieved receiver id list : " + this.receiverIdList);
-
-        //call EDIFACT rokenizer service..
-        return new TokenizerDocument(counter.incrementAndGet(),
-                String.format(template, EdifactTokenizer(this.msgBody,this.elementsToDeTokenize,senderIdList,receiverIdList,operation)));
-    }
 
     private String EdifactTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
         String response="";
@@ -99,6 +45,60 @@ public class TokenizerContoller {
             e.printStackTrace();
         }
         return response;
+    }
+
+    @PostMapping
+    @RequestMapping(value = "/tokenize", method = RequestMethod.POST)
+    @ApiOperation(value = "Tokenize an electronic message")
+    //request message must contain the message type, segments to be tokenized as a parameters
+    //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
+    public TokenizerDocument tokenize(@RequestParam(value="Elements to be Tokenized",required = true) JSONArray elementsToTokenize,
+                                      @RequestParam(value="Sender Id(S)",required = false) ArrayList senderIdList,
+                                      @RequestParam(value="Receiver Id(s)",required = false) ArrayList receiverIdList,
+                                      @RequestBody() String Document) {
+        //map inbound reqest parameters to instance parameters
+        this.elementsToTokenize = elementsToTokenize;
+        this.senderIdList = senderIdList;
+        this.receiverIdList = receiverIdList;
+        this.document = Document;
+
+        //log for debugging...
+        System.out.println("Receieved Message : " + this.document);
+        System.out.println("Receieved elemnts to be tokenized : " + this.elementsToTokenize);
+        System.out.println("Receieved sender id list : " + this.senderIdList);
+        System.out.println("Receieved receiver id list : " + this.receiverIdList);
+
+        //call EDIFACT rokenizer service..
+        return new TokenizerDocument(counter.incrementAndGet(),
+                String.format(template, EdifactTokenizer(this.document,this.elementsToTokenize,senderIdList,receiverIdList,Constants.TOKENIZER_METHOD_TOKENIZE)));
+    }
+
+
+    @PostMapping
+    @RequestMapping(value = "/de-tokenize",method = RequestMethod.POST)
+    @ApiOperation(value = "De-Tokenize an electronic message")
+    //request message must contain the message type, segments to be tokenized as a parameters
+    //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
+    public TokenizerDocument detokenize(
+            @RequestParam(value="Elements to be de-tokenzied",required = true) JSONArray elementsToDeTokenize,
+            @RequestParam(value="Sender Id(s)",required = false) ArrayList senderIdList,
+            @RequestParam(value="Receiver Id(s)",required = false) ArrayList receiverIdList,
+            @RequestBody(required = true) String Document) {
+        //map inbound reqest parameters to instance parameters
+        this.elementsToDeTokenize = elementsToDeTokenize;
+        this.senderIdList = senderIdList;
+        this.receiverIdList = receiverIdList;
+        this.document = Document;
+
+        //log for debugging...
+        System.out.println("Receieved Message : " + this.document);
+        System.out.println("Receieved elemnts to be de-tokenized : " + this.elementsToDeTokenize);
+        System.out.println("Receieved sender id list : " + this.senderIdList);
+        System.out.println("Receieved receiver id list : " + this.receiverIdList);
+
+        //call EDIFACT rokenizer service..
+        return new TokenizerDocument(counter.incrementAndGet(),
+                String.format(template, EdifactTokenizer(this.document,this.elementsToDeTokenize,senderIdList,receiverIdList,Constants.TOKENIZER_METHOD_DETOKENIZE)));
     }
 
 

@@ -3,18 +3,18 @@ package com.securitybox.editokenizerRest;
 public class TokenizerDocument {
 
     private final long id;
-    private final String content;
+    private final String Response;
 
-    public TokenizerDocument(long id, String content) {
+    public TokenizerDocument(long id, String response) {
         this.id = id;
-        this.content = content;
+        this.Response = response;
     }
 
     public long getId() {
         return id;
     }
 
-    public String getContent() {
-        return content;
+    public String getResponse() {
+        return Response;
     }
 }
