@@ -32,12 +32,14 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
-                "Tokenization REST API",
-                "This is an API service to tokenize electronic form of documents.",
+                "Electronic Document Tokenization Service",
+                "This is an API service to tokenize electronic form of document.+" +
+                        "The service support tokenization and de-tokenization of EDIFACT messages given the elemnts to be tokenized."+
+                         "In addition, the service supports a cleint to get accesss logs of other clients who has accessed the tokens",
                 "1.0.0",
                 "This is non-commercial version available for public use.",
-                new Contact("Kavindra Kulathilae", "www.securitybox.se", "kavindra.kulathilake@hotmail.com"),
-                "GNU General Public License", "GNU General Public License", Collections.emptyList());
+                new Contact("Security Box", "www.securitybox.se", "tokenizer@safetylocker.eu"),
+                "General Public License", "www.safetylocker.eu/license", Collections.emptyList());
     }
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {

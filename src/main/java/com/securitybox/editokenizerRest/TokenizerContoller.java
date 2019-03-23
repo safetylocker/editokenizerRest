@@ -28,10 +28,6 @@ public class TokenizerContoller {
     private ArrayList receiverIdList;
     private String document;
 
-
-
-
-
     private String EdifactTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
         String response="";
         try {
@@ -52,9 +48,9 @@ public class TokenizerContoller {
     @ApiOperation(value = "Tokenize an electronic message")
     //request message must contain the message type, segments to be tokenized as a parameters
     //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
-    public TokenizerDocument tokenize(@RequestParam(value="Elements to be Tokenized",required = true) JSONArray elementsToTokenize,
-                                      @RequestParam(value="Sender Id(S)",required = false) ArrayList senderIdList,
-                                      @RequestParam(value="Receiver Id(s)",required = false) ArrayList receiverIdList,
+    public TokenizerDocument tokenize(@RequestParam(value="ElementsToTokenize",required = true) JSONArray elementsToTokenize,
+                                      @RequestParam(value="SenderIds",required = false) ArrayList senderIdList,
+                                      @RequestParam(value="ReceiverIds",required = false) ArrayList receiverIdList,
                                       @RequestBody() String Document) {
         //map inbound reqest parameters to instance parameters
         this.elementsToTokenize = elementsToTokenize;
@@ -80,9 +76,9 @@ public class TokenizerContoller {
     //request message must contain the message type, segments to be tokenized as a parameters
     //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
     public TokenizerDocument detokenize(
-            @RequestParam(value="Elements to be de-tokenzied",required = true) JSONArray elementsToDeTokenize,
-            @RequestParam(value="Sender Id(s)",required = false) ArrayList senderIdList,
-            @RequestParam(value="Receiver Id(s)",required = false) ArrayList receiverIdList,
+            @RequestParam(value="ElementsToDeTokenize",required = true) JSONArray elementsToDeTokenize,
+            @RequestParam(value="SenderIds",required = false) ArrayList senderIdList,
+            @RequestParam(value="ReceiverIds",required = false) ArrayList receiverIdList,
             @RequestBody(required = true) String Document) {
         //map inbound reqest parameters to instance parameters
         this.elementsToDeTokenize = elementsToDeTokenize;
@@ -101,6 +97,23 @@ public class TokenizerContoller {
                 String.format(template, EdifactTokenizer(this.document,this.elementsToDeTokenize,senderIdList,receiverIdList,Constants.TOKENIZER_METHOD_DETOKENIZE)));
     }
 
+    //Get a stored value of a token stored
+    @ApiOperation(value = "De-Tokenize a given token.")
+    @RequestMapping(value = "/de-tokenize", method = RequestMethod.GET)
+    @ResponseBody
+    public String getTokenValue(
+            @RequestParam("token") String token) {
+        return edifact.tokenizer.deTokenize(Integer.parseInt(token));
+    }
+
+    //Get access logs of a given token
+    @ApiOperation(value = "Request audit logs of a token.")
+    @RequestMapping(value = "/audit/logs", method = RequestMethod.GET)
+    @ResponseBody
+    public String getBarBySimplePathWithRequestParam(
+            @RequestParam("token") String token) {
+        return "This API method is not yet implemented for : " + token;
+    }
 
 
 }
