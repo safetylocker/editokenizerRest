@@ -14,6 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.Collections;
 
 //API docs will be availalbe http://localhost:8080/v2/api-docs
+//http://localhost:8080/swagger-ui.html
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig extends WebMvcConfigurationSupport {
