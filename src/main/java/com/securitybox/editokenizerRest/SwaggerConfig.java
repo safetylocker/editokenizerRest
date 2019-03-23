@@ -33,9 +33,9 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "Electronic Document Tokenization Service",
-                "This is an API service to tokenize electronic form of document.+" +
-                        "The service support tokenization and de-tokenization of EDIFACT messages given the elemnts to be tokenized."+
-                         "In addition, the service supports a cleint to get accesss logs of other clients who has accessed the tokens",
+                "This is an API service to tokenize electronic form of document." +
+                          "\nThe service support tokenization and de-tokenization of EDIFACT messages given the elemnts to be tokenized." +
+                           "\nIn addition, the service supports a cleint to get accesss logs of other clients who has accessed the tokens",
                 "1.0.0",
                 "This is non-commercial version available for public use.",
                 new Contact("Security Box", "www.securitybox.se", "tokenizer@safetylocker.eu"),

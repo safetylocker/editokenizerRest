@@ -23,10 +23,6 @@ public class TokenizerContoller {
 
     private static final String template = "%s!";
     private final AtomicLong counter = new AtomicLong();
-    private JSONArray elementsToTokenize,elementsToDeTokenize;
-    private ArrayList senderIdList;
-    private ArrayList receiverIdList;
-    private String document;
 
     private String EdifactTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
         String response="";
@@ -51,22 +47,19 @@ public class TokenizerContoller {
     public TokenizerDocument tokenize(@RequestParam(value="ElementsToTokenize",required = true) JSONArray elementsToTokenize,
                                       @RequestParam(value="SenderIds",required = false) ArrayList senderIdList,
                                       @RequestParam(value="ReceiverIds",required = false) ArrayList receiverIdList,
-                                      @RequestBody() String Document) {
-        //map inbound reqest parameters to instance parameters
-        this.elementsToTokenize = elementsToTokenize;
-        this.senderIdList = senderIdList;
-        this.receiverIdList = receiverIdList;
-        this.document = Document;
+                                      @RequestParam(value="MessageType",required = false) String messageType,
+                                      @RequestBody() String document ) {
+
 
         //log for debugging...
-        System.out.println("Receieved Message : " + this.document);
-        System.out.println("Receieved elemnts to be tokenized : " + this.elementsToTokenize);
-        System.out.println("Receieved sender id list : " + this.senderIdList);
-        System.out.println("Receieved receiver id list : " + this.receiverIdList);
+        System.out.println("Receieved Message : " + document);
+        System.out.println("Receieved elemnts to be tokenized : " + elementsToTokenize);
+        System.out.println("Receieved sender id list : " + senderIdList);
+        System.out.println("Receieved receiver id list : " + receiverIdList);
 
         //call EDIFACT rokenizer service..
         return new TokenizerDocument(counter.incrementAndGet(),
-                String.format(template, EdifactTokenizer(this.document,this.elementsToTokenize,senderIdList,receiverIdList,Constants.TOKENIZER_METHOD_TOKENIZE)));
+                String.format(template, EdifactTokenizer(document,elementsToTokenize,senderIdList,receiverIdList,Constants.TOKENIZER_METHOD_TOKENIZE)));
     }
 
 
@@ -79,22 +72,18 @@ public class TokenizerContoller {
             @RequestParam(value="ElementsToDeTokenize",required = true) JSONArray elementsToDeTokenize,
             @RequestParam(value="SenderIds",required = false) ArrayList senderIdList,
             @RequestParam(value="ReceiverIds",required = false) ArrayList receiverIdList,
-            @RequestBody(required = true) String Document) {
-        //map inbound reqest parameters to instance parameters
-        this.elementsToDeTokenize = elementsToDeTokenize;
-        this.senderIdList = senderIdList;
-        this.receiverIdList = receiverIdList;
-        this.document = Document;
+            @RequestParam(value="MessageType",required = false) String messageType,
+            @RequestBody(required = true) String document) {
 
         //log for debugging...
-        System.out.println("Receieved Message : " + this.document);
-        System.out.println("Receieved elemnts to be de-tokenized : " + this.elementsToDeTokenize);
-        System.out.println("Receieved sender id list : " + this.senderIdList);
-        System.out.println("Receieved receiver id list : " + this.receiverIdList);
+        System.out.println("Receieved Message : " + document);
+        System.out.println("Receieved elemnts to be de-tokenized : " + elementsToDeTokenize);
+        System.out.println("Receieved sender id list : " + senderIdList);
+        System.out.println("Receieved receiver id list : " + receiverIdList);
 
         //call EDIFACT rokenizer service..
         return new TokenizerDocument(counter.incrementAndGet(),
-                String.format(template, EdifactTokenizer(this.document,this.elementsToDeTokenize,senderIdList,receiverIdList,Constants.TOKENIZER_METHOD_DETOKENIZE)));
+                String.format(template, EdifactTokenizer(document,elementsToDeTokenize,senderIdList,receiverIdList,Constants.TOKENIZER_METHOD_DETOKENIZE)));
     }
 
     //Get a stored value of a token stored
@@ -103,7 +92,11 @@ public class TokenizerContoller {
     @ResponseBody
     public String getTokenValue(
             @RequestParam("token") String token) {
-        return edifact.tokenizer.deTokenize(Integer.parseInt(token));
+        String response = edifact.tokenizer.deTokenize(Integer.parseInt(token));
+        if(response.equalsIgnoreCase(token))
+            return "Token Not Found";
+        else
+            return response;
     }
 
     //Get access logs of a given token
