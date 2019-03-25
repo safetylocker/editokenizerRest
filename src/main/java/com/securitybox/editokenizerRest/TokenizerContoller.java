@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import static com.securitybox.editokenizerRest.TokenizerApplication.csv;
 import static com.securitybox.editokenizerRest.TokenizerApplication.edifact;
 
 @RestController
@@ -31,6 +32,27 @@ public class TokenizerContoller {
                 response = edifact.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE,elementsToDeTokenize,input,senderIdList,receiverIdList);
             else if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_DETOKENIZE))
                 response = edifact.docuemntHandler(Constants.TOKENIZER_METHOD_DETOKENIZE,elementsToDeTokenize,input,senderIdList,receiverIdList);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    private String csvTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
+        String response="";
+        try {
+            if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_TOKENIZE)) {
+                csv.setRecordDelimeter("\n");
+                csv.setFieldDelimeter(":");
+                response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE, elementsToDeTokenize, input, senderIdList, receiverIdList);
+            }else if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_DETOKENIZE)){
+                csv.setRecordDelimeter("\n");
+                csv.setFieldDelimeter(":");
+                response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_DETOKENIZE,elementsToDeTokenize,input,senderIdList,receiverIdList);
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -58,8 +80,15 @@ public class TokenizerContoller {
         System.out.println("Receieved receiver id list : " + receiverIdList);
 
         //call EDIFACT rokenizer service..
-        return new TokenizerDocument(counter.incrementAndGet(),
-                String.format(template, EdifactTokenizer(document,elementsToTokenize,senderIdList,receiverIdList,Constants.TOKENIZER_METHOD_TOKENIZE)));
+        if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_EDIFACT)) {
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template, EdifactTokenizer(document, elementsToTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
+        }else if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_CSV)){
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template, csvTokenizer(document, elementsToTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
+        }else{
+            return null;
+        }
     }
 
 
@@ -87,12 +116,25 @@ public class TokenizerContoller {
     }
 
     //Get a stored value of a token stored
+    @ApiOperation(value = "Tokenize a given value.")
+    @RequestMapping(value = "/tokenize", method = RequestMethod.GET)
+    @ResponseBody
+    public String createTokenValue(
+            @RequestParam(value = "value",required = true) String value,
+            @RequestParam(value = "maxLenght",required = false) Integer maxLength)
+    {
+        String response = edifact.tokenizer.tokenize(value,maxLength);
+        return response;
+    }
+
+
+    //Get a stored value of a token stored
     @ApiOperation(value = "De-Tokenize a given token.")
     @RequestMapping(value = "/de-tokenize", method = RequestMethod.GET)
     @ResponseBody
     public String getTokenValue(
             @RequestParam("token") String token) {
-        String response = edifact.tokenizer.deTokenize(Integer.parseInt(token));
+        String response = edifact.tokenizer.deTokenize(token);
         if(response.equalsIgnoreCase(token))
             return "Token Not Found";
         else
@@ -107,6 +149,8 @@ public class TokenizerContoller {
             @RequestParam("token") String token) {
         return "This API method is not yet implemented for : " + token;
     }
+
+
 
 
 }

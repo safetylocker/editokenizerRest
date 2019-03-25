@@ -8,7 +8,7 @@
       <element id="module-output" name="ediTokenizerRest" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/swagger/swagger-annotations/1.5.20/swagger-annotations-1.5.20.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/plugin/spring-plugin-metadata/1.2.0.RELEASE/spring-plugin-metadata-1.2.0.RELEASE.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../ediTokenizer/ediTokenizer/out/artifacts/ediTokenizer_jar/ediTokenizer.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../ediTokenizer/ediTokenizer/out/artifacts/ediTokenizer_jar1/ediTokenizer.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/jul-to-slf4j/1.7.25/jul-to-slf4j-1.7.25.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/springfox/springfox-swagger2/2.9.2/springfox-swagger2-2.9.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-starter-web/2.1.3.RELEASE/spring-boot-starter-web-2.1.3.RELEASE.jar" path-in-jar="/" />
