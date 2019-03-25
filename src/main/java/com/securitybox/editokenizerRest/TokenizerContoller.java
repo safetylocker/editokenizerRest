@@ -13,8 +13,7 @@ import org.json.JSONException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static com.securitybox.editokenizerRest.TokenizerApplication.csv;
-import static com.securitybox.editokenizerRest.TokenizerApplication.edifact;
+import static com.securitybox.editokenizerRest.TokenizerApplication.*;
 
 @RestController
 @EnableWebMvc
@@ -123,8 +122,13 @@ public class TokenizerContoller {
             @RequestParam(value = "value",required = true) String value,
             @RequestParam(value = "maxLenght",required = false) Integer maxLength)
     {
-        String response = edifact.tokenizer.tokenize(value,maxLength);
-        return response;
+        try {
+            return simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE,value,null,null,maxLength);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Tokenization Failed...";
+        }
+
     }
 
 
@@ -134,7 +138,14 @@ public class TokenizerContoller {
     @ResponseBody
     public String getTokenValue(
             @RequestParam("token") String token) {
-        String response = edifact.tokenizer.deTokenize(token);
+        String response = null;
+        try {
+            response = simpleTokenizer.deTokenizeSingleValue(Constants.TOKENIZER_METHOD_DETOKENIZE,token,null,null);
+        } catch (JSONException e) {
+            return "Token Not Found";
+        } catch (NoSuchAlgorithmException e) {
+            return "Token Not Found";
+        }
         if(response.equalsIgnoreCase(token))
             return "Token Not Found";
         else
