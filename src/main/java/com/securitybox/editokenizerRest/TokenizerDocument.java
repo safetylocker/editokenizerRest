@@ -1,9 +1,14 @@
 package com.securitybox.editokenizerRest;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class TokenizerDocument {
 
+    @ApiModelProperty(notes = "Request ID")
     private final long id;
+    @ApiModelProperty(notes = "Response tokenize/detokenize message")
     private final String Response;
+
 
     public TokenizerDocument(long id, String response) {
         this.id = id;

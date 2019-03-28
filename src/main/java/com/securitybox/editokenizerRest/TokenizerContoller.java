@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.securitybox.constants.Constants;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +16,19 @@ import static com.securitybox.editokenizerRest.TokenizerApplication.*;
 @RestController
 @EnableWebMvc
 @RequestMapping("/tokenizer")
-@Api(value="Tokenization REST API.", description="API operation supported for tokenization system")
+@Api(value="Tokenization REST API.", description="API operationd supported for tokenization system.")
+@ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Request Success"),
+        @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+        @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+        @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+})
 public class TokenizerContoller {
 
-    private static final String template = "%s!";
+    private static final String template = "%s";
     private final AtomicLong counter = new AtomicLong();
 
+    //Method for handling EDIFACT messages
     private String EdifactTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
         String response="";
         try {
@@ -39,6 +44,7 @@ public class TokenizerContoller {
         return response;
     }
 
+    //Method for handling CSV messages
     private String csvTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
         String response="";
         try {
@@ -60,11 +66,26 @@ public class TokenizerContoller {
         return response;
     }
 
-    @PostMapping
-    @RequestMapping(value = "/tokenize", method = RequestMethod.POST)
-    @ApiOperation(value = "Tokenize an electronic message")
     //request message must contain the message type, segments to be tokenized as a parameters
     //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
+    @PostMapping
+    @RequestMapping(value = "/tokenize", method = RequestMethod.POST, produces = "application/json", consumes = "text/plain")
+    @ApiOperation(value = "Tokenize an electronic message",
+            notes = "Sample EDIFACT Request : \n" +
+                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestTokenizerEDISample +
+                    "\n\nExample array of object to tokenize  : \n" +
+                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonEDIFACT +
+                    "\n\nSample CSV Request : \n" +
+                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerCSVSample +
+                    "\n\nExample array of object to tokenize  : \n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonExampleCSV
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Request Success"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    @ApiImplicitParam(name="MessageType",example = "EDIFACT OR CSV")
     public TokenizerDocument tokenize(@RequestParam(value="ElementsToTokenize",required = true) JSONArray elementsToTokenize,
                                       @RequestParam(value="SenderIds",required = false) ArrayList senderIdList,
                                       @RequestParam(value="ReceiverIds",required = false) ArrayList receiverIdList,
@@ -90,12 +111,27 @@ public class TokenizerContoller {
         }
     }
 
-
-    @PostMapping
-    @RequestMapping(value = "/de-tokenize",method = RequestMethod.POST)
-    @ApiOperation(value = "De-Tokenize an electronic message")
     //request message must contain the message type, segments to be tokenized as a parameters
     //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
+    @PostMapping
+    @RequestMapping(value = "/de-tokenize",method = RequestMethod.POST, produces = "application/json",consumes = "text/plain")
+    @ApiOperation(value = "De-Tokenize an electronic message",
+            notes = "Sample EDIFACT Request : \n" +
+                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerEDISample +
+                    "\n\nExample array of object to tokenize  : \n" +
+                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerEDISample +
+                    "\n\nSample CSV Request : \n" +
+                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerCSVSample +
+                    "\n\nExample array of object to tokenize  : \n" +
+                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonCSV)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Request Success"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    @ApiImplicitParam(name="MessageType",example = "EDIFACT OR CSV")
+
     public TokenizerDocument detokenize(
             @RequestParam(value="ElementsToDeTokenize",required = true) JSONArray elementsToDeTokenize,
             @RequestParam(value="SenderIds",required = false) ArrayList senderIdList,
@@ -115,15 +151,28 @@ public class TokenizerContoller {
     }
 
     //Get a stored value of a token stored
-    @ApiOperation(value = "Tokenize a given value.")
+    @ApiOperation(value = "Tokenize a given value.",notes = "Minimum token lenght must be at least 32 characters for token generation.")
     @RequestMapping(value = "/tokenize", method = RequestMethod.GET)
     @ResponseBody
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Request Success"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    @ApiImplicitParam(name="value",example = "Value to be tokenized.")
     public String createTokenValue(
             @RequestParam(value = "value",required = true) String value,
-            @RequestParam(value = "maxLenght",required = false) Integer maxLength)
+            @RequestParam(value = "maxTokenLenght",required = false) Integer maxTokenLenght)
     {
         try {
-            return simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE,value,null,null,maxLength);
+            //check the macimum value support by client for the token
+            //Value must be least 32 chars to support the MD-5 algoritm, thus request is reqjected
+            if(maxTokenLenght <= 32){
+                return "Minimum token lenght must be at least 32 characters for token generation...";
+            } else {
+                return simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE, value, null, null, maxTokenLenght);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "Tokenization Failed...";
@@ -134,8 +183,14 @@ public class TokenizerContoller {
 
     //Get a stored value of a token stored
     @ApiOperation(value = "De-Tokenize a given token.")
-    @RequestMapping(value = "/de-tokenize", method = RequestMethod.GET)
+    @RequestMapping(value = "/de-tokenize", method = RequestMethod.GET, produces = "application/json", consumes = "text/plain")
     @ResponseBody
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Request Success"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
     public String getTokenValue(
             @RequestParam("token") String token) {
         String response = null;
@@ -154,8 +209,14 @@ public class TokenizerContoller {
 
     //Get access logs of a given token
     @ApiOperation(value = "Request audit logs of a token.")
-    @RequestMapping(value = "/audit/logs", method = RequestMethod.GET)
+    @RequestMapping(value = "/audit/logs", method = RequestMethod.GET,produces = "application/json" , consumes = "text/plain")
     @ResponseBody
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Request Success"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
     public String getBarBySimplePathWithRequestParam(
             @RequestParam("token") String token) {
         return "This API method is not yet implemented for : " + token;
