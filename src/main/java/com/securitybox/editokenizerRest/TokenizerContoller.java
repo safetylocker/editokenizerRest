@@ -73,11 +73,12 @@ public class TokenizerContoller {
     @ApiOperation(value = "Tokenize an electronic message",
             notes = "Sample EDIFACT Request : \n" +
                     "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestTokenizerEDISample +
-                    "\n\nExample array of object to tokenize  : \n" +
+                    "\n\nSample array of items to tokenize  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonEDIFACT +
                     "\n\nSample CSV Request : \n" +
                     "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerCSVSample +
-                    "\n\nExample array of object to tokenize  : \n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonExampleCSV
+                    "\n\nSample array of items to tokenize  : \n" +
+                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonExampleCSV
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Request Success"),
@@ -107,8 +108,11 @@ public class TokenizerContoller {
             return new TokenizerDocument(counter.incrementAndGet(),
                     String.format(template, csvTokenizer(document, elementsToTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
         }else{
-            return null;
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template,"Detokenization falure. Please verify the request and parameters are valid."));
         }
+
+
     }
 
     //request message must contain the message type, segments to be tokenized as a parameters
@@ -118,11 +122,11 @@ public class TokenizerContoller {
     @ApiOperation(value = "De-Tokenize an electronic message",
             notes = "Sample EDIFACT Request : \n" +
                     "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerEDISample +
-                    "\n\nExample array of object to tokenize  : \n" +
-                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerEDISample +
+                    "\n\nSample array of items to de-tokenize  : \n" +
+                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonEDIFACT +
                     "\n\nSample CSV Request : \n" +
                     "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerCSVSample +
-                    "\n\nExample array of object to tokenize  : \n" +
+                    "\n\nSample array of items to tokenize  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonCSV)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Request Success"),
@@ -168,8 +172,8 @@ public class TokenizerContoller {
         try {
             //check the macimum value support by client for the token
             //Value must be least 32 chars to support the MD-5 algoritm, thus request is reqjected
-            if(maxTokenLenght <= 32){
-                return "Minimum token lenght must be at least 32 characters for token generation...";
+            if(maxTokenLenght < 32){
+                return "Token lenght must be at least 32 characters for token generation...";
             } else {
                 return simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE, value, null, null, maxTokenLenght);
             }
@@ -183,7 +187,7 @@ public class TokenizerContoller {
 
     //Get a stored value of a token stored
     @ApiOperation(value = "De-Tokenize a given token.")
-    @RequestMapping(value = "/de-tokenize", method = RequestMethod.GET, produces = "application/json", consumes = "text/plain")
+    @RequestMapping(value = "/de-tokenize", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Request Success"),
@@ -191,25 +195,30 @@ public class TokenizerContoller {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
-    public String getTokenValue(
+    public TokenizerDocument getTokenValue(
             @RequestParam("token") String token) {
         String response = null;
         try {
             response = simpleTokenizer.deTokenizeSingleValue(Constants.TOKENIZER_METHOD_DETOKENIZE,token,null,null);
+
         } catch (JSONException e) {
-            return "Token Not Found";
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template,"Token Not Found"));
         } catch (NoSuchAlgorithmException e) {
-            return "Token Not Found";
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template,"Token Not Found"));
         }
         if(response.equalsIgnoreCase(token))
-            return "Token Not Found";
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template,"Token Not Found"));
         else
-            return response;
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template,response));
     }
 
     //Get access logs of a given token
     @ApiOperation(value = "Request audit logs of a token.")
-    @RequestMapping(value = "/audit/logs", method = RequestMethod.GET,produces = "application/json" , consumes = "text/plain")
+    @RequestMapping(value = "/audit/logs", method = RequestMethod.GET,produces = "application/json")
     @ResponseBody
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Request Success"),
@@ -217,9 +226,12 @@ public class TokenizerContoller {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
-    public String getBarBySimplePathWithRequestParam(
+    public TokenizerDocument getBarBySimplePathWithRequestParam(
             @RequestParam("token") String token) {
-        return "This API method is not yet implemented for : " + token;
+        return new TokenizerDocument(counter.incrementAndGet(),
+                String.format(template,"This API method is not yet implemented !!!"));
+
+
     }
 
 
