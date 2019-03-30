@@ -9,6 +9,6 @@ public class Constants {
     static final String requestTokenizerCSVSample  ="Raw1_column_1_data:Raw1_column_2_data:Raw1_column_3_data:Raw1_column_4_data\nRaw2_column_1_data:Raw2_column_2_data:Raw2_column_3_data:Raw2_column_4_data";
     static final String requestDeTokenizerCSVSample  ="Raw1_column_1_data:Raw1_column_2_data:Raw1_column_3_data:Raw1_column_4_data\nRaw2_column_1_data:Raw2_column_2_data:Raw2_column_3_data:Raw2_column_4_data";
     static final String elementsToTokenizeJsonCSV ="[{\"dataElementPosition\":1, \"dataElementLength\":30},{\"dataElementPosition\":2, \"dataElementLength\":20}]";
-    static final String elementsToDeTokenizeJsonExampleCSV="[{\"dataElementPosition\":1,{\"dataElementPosition\":2]";
+    static final String elementsToDeTokenizeJsonExampleCSV="[{\"dataElementPosition\":1, \"dataElementLength\":30},{\"dataElementPosition\":2, \"dataElementLength\":20}]";
 
 }

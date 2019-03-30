@@ -28,6 +28,9 @@ public class TokenizerContoller {
     private static final String template = "%s";
     private final AtomicLong counter = new AtomicLong();
 
+    //******************************************************************************************
+    // TOKENIZE EDIFACT Documents
+    //******************************************************************************************
     //Method for handling EDIFACT messages
     private String EdifactTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
         String response="";
@@ -44,7 +47,9 @@ public class TokenizerContoller {
         return response;
     }
 
-    //Method for handling CSV messages
+    //******************************************************************************************
+    // TOKENIZE CSV Documents
+    //******************************************************************************************
     private String csvTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
         String response="";
         try {
@@ -66,6 +71,9 @@ public class TokenizerContoller {
         return response;
     }
 
+    //******************************************************************************************
+    // TOKENIZE EDI Documents main method
+    //******************************************************************************************
     //request message must contain the message type, segments to be tokenized as a parameters
     //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
     @PostMapping
@@ -109,12 +117,15 @@ public class TokenizerContoller {
                     String.format(template, csvTokenizer(document, elementsToTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
         }else{
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template,"Detokenization falure. Please verify the request and parameters are valid."));
+                    String.format(template,"Tokenization falure. Please verify the request and parameters are valid."));
         }
 
 
     }
 
+    //******************************************************************************************
+    // DE-TOKENIZE EDI Documents main method
+    //******************************************************************************************
     //request message must contain the message type, segments to be tokenized as a parameters
     //http://localhost:8080/tokenizer/edidoc?msgType=EDIFACT
     @PostMapping
@@ -125,7 +136,7 @@ public class TokenizerContoller {
                     "\n\nSample array of items to de-tokenize  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonEDIFACT +
                     "\n\nSample CSV Request : \n" +
-                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerCSVSample +
+                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestTokenizerCSVSample +
                     "\n\nSample array of items to tokenize  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonCSV)
     @ApiResponses(value = {
@@ -150,10 +161,22 @@ public class TokenizerContoller {
         System.out.println("Receieved receiver id list : " + receiverIdList);
 
         //call EDIFACT rokenizer service..
-        return new TokenizerDocument(counter.incrementAndGet(),
-                String.format(template, EdifactTokenizer(document,elementsToDeTokenize,senderIdList,receiverIdList,Constants.TOKENIZER_METHOD_DETOKENIZE)));
+        if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_EDIFACT)) {
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template, EdifactTokenizer(document, elementsToDeTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
+        }else if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_CSV)){
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template, csvTokenizer(document, elementsToDeTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
+
+        } else {
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template,"De-tokenization falure. Please verify the request and parameters are valid."));
+        }
     }
 
+    //******************************************************************************************
+    // TOKENIZE single element
+    //******************************************************************************************
     //Get a stored value of a token stored
     @ApiOperation(value = "Tokenize a given value.",notes = "Minimum token lenght must be at least 32 characters for token generation.")
     @RequestMapping(value = "/tokenize", method = RequestMethod.GET)
@@ -165,7 +188,7 @@ public class TokenizerContoller {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     @ApiImplicitParam(name="value",example = "Value to be tokenized.")
-    public String createTokenValue(
+    public TokenizerDocument createTokenValue(
             @RequestParam(value = "value",required = true) String value,
             @RequestParam(value = "maxTokenLenght",required = false) Integer maxTokenLenght)
     {
@@ -173,18 +196,23 @@ public class TokenizerContoller {
             //check the macimum value support by client for the token
             //Value must be least 32 chars to support the MD-5 algoritm, thus request is reqjected
             if(maxTokenLenght < 32){
-                return "Token lenght must be at least 32 characters for token generation...";
+                return new TokenizerDocument(counter.incrementAndGet(),
+                        String.format(template,"Token length must be at least 32 characters for token generation..."));
             } else {
-                return simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE, value, null, null, maxTokenLenght);
+                return new TokenizerDocument(counter.incrementAndGet(),
+                        String.format(template,simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE, value, null, null, maxTokenLenght)));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Tokenization Failed...";
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template,"Tokenization Failed..."));
         }
 
     }
 
-
+    //******************************************************************************************
+    // DE-TOKENIZE single element
+    //******************************************************************************************
     //Get a stored value of a token stored
     @ApiOperation(value = "De-Tokenize a given token.")
     @RequestMapping(value = "/de-tokenize", method = RequestMethod.GET, produces = "application/json")
@@ -216,6 +244,9 @@ public class TokenizerContoller {
                     String.format(template,response));
     }
 
+    //******************************************************************************************
+    // Access log method
+    //******************************************************************************************
     //Get access logs of a given token
     @ApiOperation(value = "Request audit logs of a token.")
     @RequestMapping(value = "/audit/logs", method = RequestMethod.GET,produces = "application/json")
