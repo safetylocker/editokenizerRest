@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.securitybox.constants.Constants;
+import com.securitybox.editokenizerRest.model.AuditResponse;
+import com.securitybox.storage.AccessEntry;
 import io.swagger.annotations.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,13 +34,13 @@ public class TokenizerContoller {
     // TOKENIZE EDIFACT Documents
     //******************************************************************************************
     //Method for handling EDIFACT messages
-    private String EdifactTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
+    private String EdifactTokenizer(String input, JSONArray elementsToDeTokenize, String senderId, ArrayList receiverIdList,String operation){
         String response="";
         try {
             if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_TOKENIZE))
-                response = edifact.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE,elementsToDeTokenize,input,senderIdList,receiverIdList);
+                response = edifact.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE,elementsToDeTokenize,input,senderId,receiverIdList);
             else if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_DETOKENIZE))
-                response = edifact.docuemntHandler(Constants.TOKENIZER_METHOD_DETOKENIZE,elementsToDeTokenize,input,senderIdList,receiverIdList);
+                response = edifact.docuemntHandler(Constants.TOKENIZER_METHOD_DETOKENIZE,elementsToDeTokenize,input,senderId,receiverIdList);
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -50,17 +52,17 @@ public class TokenizerContoller {
     //******************************************************************************************
     // TOKENIZE CSV Documents
     //******************************************************************************************
-    private String csvTokenizer(String input, JSONArray elementsToDeTokenize, ArrayList senderIdList, ArrayList receiverIdList,String operation){
+    private String csvTokenizer(String input, JSONArray elementsToDeTokenize, String senderId, ArrayList receiverIdList,String operation){
         String response="";
         try {
             if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_TOKENIZE)) {
                 csv.setRecordDelimeter("\n");
                 csv.setFieldDelimeter(":");
-                response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE, elementsToDeTokenize, input, senderIdList, receiverIdList);
+                response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE, elementsToDeTokenize, input, senderId, receiverIdList);
             }else if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_DETOKENIZE)){
                 csv.setRecordDelimeter("\n");
                 csv.setFieldDelimeter(":");
-                response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_DETOKENIZE,elementsToDeTokenize,input,senderIdList,receiverIdList);
+                response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_DETOKENIZE,elementsToDeTokenize,input,senderId,receiverIdList);
             }
 
         } catch (JSONException e) {
@@ -88,33 +90,20 @@ public class TokenizerContoller {
                     "\n\nSample array of items to tokenize  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonExampleCSV
     )
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Request Success"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
     @ApiImplicitParam(name="MessageType",example = "EDIFACT OR CSV")
     public TokenizerDocument tokenize(@RequestParam(value="ElementsToTokenize",required = true) JSONArray elementsToTokenize,
-                                      @RequestParam(value="SenderIds",required = false) ArrayList senderIdList,
+                                      @RequestParam(value="SenderId",required = true) String senderId,
                                       @RequestParam(value="ReceiverIds",required = false) ArrayList receiverIdList,
-                                      @RequestParam(value="MessageType",required = false) String messageType,
+                                      @RequestParam(value="MessageType",required = true) String messageType,
                                       @RequestBody() String document ) {
-
-
-        //log for debugging...
-        System.out.println("Receieved Message : " + document);
-        System.out.println("Receieved elemnts to be tokenized : " + elementsToTokenize);
-        System.out.println("Receieved sender id list : " + senderIdList);
-        System.out.println("Receieved receiver id list : " + receiverIdList);
 
         //call EDIFACT rokenizer service..
         if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_EDIFACT)) {
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template, EdifactTokenizer(document, elementsToTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
+                    String.format(template, EdifactTokenizer(document, elementsToTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
         }else if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_CSV)){
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template, csvTokenizer(document, elementsToTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
+                    String.format(template, csvTokenizer(document, elementsToTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
         }else{
             return new TokenizerDocument(counter.incrementAndGet(),
                     String.format(template,"Tokenization falure. Please verify the request and parameters are valid."));
@@ -139,34 +128,28 @@ public class TokenizerContoller {
                     "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestTokenizerCSVSample +
                     "\n\nSample array of items to tokenize  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonCSV)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Request Success"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
     @ApiImplicitParam(name="MessageType",example = "EDIFACT OR CSV")
 
     public TokenizerDocument detokenize(
             @RequestParam(value="ElementsToDeTokenize",required = true) JSONArray elementsToDeTokenize,
-            @RequestParam(value="SenderIds",required = false) ArrayList senderIdList,
+            @RequestParam(value="SenderId",required = true) String senderId,
             @RequestParam(value="ReceiverIds",required = false) ArrayList receiverIdList,
-            @RequestParam(value="MessageType",required = false) String messageType,
+            @RequestParam(value="MessageType",required = true) String messageType,
             @RequestBody(required = true) String document) {
 
         //log for debugging...
         System.out.println("Receieved Message : " + document);
         System.out.println("Receieved elemnts to be de-tokenized : " + elementsToDeTokenize);
-        System.out.println("Receieved sender id list : " + senderIdList);
+        System.out.println("Receieved sender id : " + senderId);
         System.out.println("Receieved receiver id list : " + receiverIdList);
 
         //call EDIFACT rokenizer service..
         if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_EDIFACT)) {
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template, EdifactTokenizer(document, elementsToDeTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
+                    String.format(template, EdifactTokenizer(document, elementsToDeTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
         }else if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_CSV)){
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template, csvTokenizer(document, elementsToDeTokenize, senderIdList, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
+                    String.format(template, csvTokenizer(document, elementsToDeTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
 
         } else {
             return new TokenizerDocument(counter.incrementAndGet(),
@@ -181,15 +164,10 @@ public class TokenizerContoller {
     @ApiOperation(value = "Tokenize a given value.",notes = "Minimum token lenght must be at least 32 characters for token generation.")
     @RequestMapping(value = "/tokenize", method = RequestMethod.GET)
     @ResponseBody
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Request Success"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
     @ApiImplicitParam(name="value",example = "Value to be tokenized.")
     public TokenizerDocument createTokenValue(
             @RequestParam(value = "value",required = true) String value,
+            @RequestParam(value="SenderId",required = true) String senderId,
             @RequestParam(value = "maxTokenLenght",required = false) Integer maxTokenLenght)
     {
         try {
@@ -200,7 +178,7 @@ public class TokenizerContoller {
                         String.format(template,"Token length must be at least 32 characters for token generation..."));
             } else {
                 return new TokenizerDocument(counter.incrementAndGet(),
-                        String.format(template,simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE, value, null, null, maxTokenLenght)));
+                        String.format(template,simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE, value, senderId, null, maxTokenLenght)));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,18 +194,14 @@ public class TokenizerContoller {
     //Get a stored value of a token stored
     @ApiOperation(value = "De-Tokenize a given token.")
     @RequestMapping(value = "/de-tokenize", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Request Success"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
     public TokenizerDocument getTokenValue(
-            @RequestParam("token") String token) {
+            @RequestParam("token") String token,
+            @RequestParam(value="SenderId",required = true) String senderId
+        )
+    {
         String response = null;
         try {
-            response = simpleTokenizer.deTokenizeSingleValue(Constants.TOKENIZER_METHOD_DETOKENIZE,token,null,null);
+            response = simpleTokenizer.deTokenizeSingleValue(Constants.TOKENIZER_METHOD_DETOKENIZE,token,senderId,null);
 
         } catch (JSONException e) {
             return new TokenizerDocument(counter.incrementAndGet(),
@@ -251,21 +225,15 @@ public class TokenizerContoller {
     @ApiOperation(value = "Request audit logs of a token.")
     @RequestMapping(value = "/audit/logs", method = RequestMethod.GET,produces = "application/json")
     @ResponseBody
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Request Success"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
-    public TokenizerDocument getBarBySimplePathWithRequestParam(
-            @RequestParam("token") String token) {
-        return new TokenizerDocument(counter.incrementAndGet(),
-                String.format(template,"This API method is not yet implemented !!!"));
+    public AuditResponse getAuditLogs(
+            @RequestParam("token") String token,
+            @RequestParam(value="SenderId",required = true) String senderId
 
 
+    ) {
+
+        return new AuditResponse(counter.incrementAndGet(),
+                simpleTokenizer.tokenizer.getAccessLogs(token)
+        );
     }
-
-
-
-
 }
