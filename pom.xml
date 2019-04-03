@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.securitybox</groupId>
             <artifactId>ediparser</artifactId>
-            <version>2.0.3-SNAPSHOT</version>
+            <version>2.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin.external.google</groupId>
@@ -93,8 +93,36 @@
                     <executable>true</executable>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.programirame.Main</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
     </plugins>
 
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/pom.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/pom.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
 
     </build>
 

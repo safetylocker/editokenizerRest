@@ -1,5 +1,6 @@
 package com.securitybox.editokenizerRest;
 
+import com.securitybox.constants.Constants;
 import com.securitybox.ediparser.CSV;
 import com.securitybox.ediparser.EDIFACT;
 import com.securitybox.ediparser.SimpleTokenizer;

@@ -10,8 +10,11 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import sun.applet.Main;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Properties;
 
 //API docs will be availalbe http://localhost:8080/v2/api-docs
 //http://localhost:8080/swagger-ui.html
@@ -32,12 +35,19 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     }
 
     private ApiInfo apiInfo() {
+        Package mainPackage = Main.class.getPackage();
+        Properties properties = new Properties();
+        /*try {
+            properties.load(Main.class.getResourceAsStream("/resoruces/pom.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
         return new ApiInfo(
                 "Electronic Document Tokenization Service",
                 "This is an API service to tokenize electronic form of documents. EDIFACT and CSV are currently supported. " +
                           "The service supports tokenization and de-tokenization of EDIFACT/CSV messages given the eleemnts to be tokenized." +
                           "In addition, the service supports a cleint to get access logs of tokenized elements.",
-                "1.0.0",
+                mainPackage.getImplementationVersion() /*+"-"+ properties.getProperty("version")*/,
                 "This is non-commercial version available for public use.",
                 new Contact("Safety Locker", "www.safetylocker.eu", "tokenizer@safetylocker.eu"),
                 "General Public License", "www.safetylocker.eu/license", Collections.emptyList());
