@@ -86,9 +86,9 @@ public class TokenizerContoller {
                     "\n\n2)Sample array of items to tokenize(EDIFACT)  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonEDIFACT +
                     "\n\n3)Sample CSV Request : \n" +
-                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerCSVSample +
+                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestTokenizerCSVSample +
                     "\n\n4)Sample array of items to tokenize(CSV)  : \n" +
-                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonExampleCSV
+                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonCSV
     )
     @ApiImplicitParam(name="MessageType",example = "EDIFACT OR CSV")
     public TokenizerDocument tokenize(@RequestParam(value="ElementsToTokenize",required = true) JSONArray elementsToTokenize,
@@ -125,9 +125,9 @@ public class TokenizerContoller {
                     "\n\n2)Sample array of items to de-tokenize(EDIFACT)  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonEDIFACT +
                     "\n\n3)Sample CSV Request : \n" +
-                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestTokenizerCSVSample +
+                    "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerCSVSample +
                     "\n\n4)Sample array of items to de-tokenize(CSV)  : \n" +
-                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonCSV)
+                    "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonExampleCSV)
     @ApiImplicitParam(name="MessageType",example = "EDIFACT OR CSV")
 
     public TokenizerDocument detokenize(
@@ -161,7 +161,7 @@ public class TokenizerContoller {
     // TOKENIZE single element
     //******************************************************************************************
     //Get a stored value of a token stored
-    @ApiOperation(value = "Tokenize a given value.",notes = "Minimum token lenght must be at least 32 characters for token generation.")
+    @ApiOperation(value = "Tokenize a given value.",notes = "maxTokenLenght token lenght must be at least 32 characters for token generation.")
     @RequestMapping(value = "/tokenize", method = RequestMethod.GET)
     @ResponseBody
     @ApiImplicitParam(name="value",example = "Value to be tokenized.")
