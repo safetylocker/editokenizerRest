@@ -82,13 +82,13 @@ public class TokenizerContoller {
     @PostMapping
     @RequestMapping(value = "/tokenize", method = RequestMethod.POST, produces = "application/json", consumes = "text/plain")
     @ApiOperation(value = "Tokenize an electronic message",
-            notes = "1) Sample EDIFACT Request : \n" +
+            notes = "1)Sample EDIFACT Request : \n" +
                     "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestTokenizerEDISample +
-                    "\n\n2) Sample array of items to tokenize(EDIFACT)  : \n" +
+                    "\n\n2)Sample array of items to tokenize(EDIFACT)  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonEDIFACT +
-                    "\n\n3) Sample CSV Request : \n" +
+                    "\n\n3)Sample CSV Request : \n" +
                     "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerCSVSample +
-                    "\n\n4) Sample array of items to tokenize(CSV)  : \n" +
+                    "\n\n4)Sample array of items to tokenize(CSV)  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonExampleCSV
     )
     @ApiImplicitParam(name="MessageType",example = "EDIFACT OR CSV")
@@ -121,13 +121,13 @@ public class TokenizerContoller {
     @PostMapping
     @RequestMapping(value = "/de-tokenize",method = RequestMethod.POST, produces = "application/json",consumes = "text/plain")
     @ApiOperation(value = "De-Tokenize an electronic message",
-            notes = "1) Sample EDIFACT Request : \n" +
+            notes = "1)Sample EDIFACT Request : \n" +
                     "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestDeTokenizerEDISample +
-                    "\n\n2) Sample array of items to de-tokenize(EDIFACT)  : \n" +
+                    "\n\n2)Sample array of items to de-tokenize(EDIFACT)  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToDeTokenizeJsonEDIFACT +
-                    "\n\n3) Sample CSV Request : \n" +
+                    "\n\n3)Sample CSV Request : \n" +
                     "-------------------------\n" + com.securitybox.editokenizerRest.Constants.requestTokenizerCSVSample +
-                    "\n\n4) Sample array of items to tokenize(CSV)  : \n" +
+                    "\n\n4)Sample array of items to de-tokenize(CSV)  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonCSV)
     @ApiImplicitParam(name="MessageType",example = "EDIFACT OR CSV")
 
