@@ -16,7 +16,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import static com.securitybox.editokenizerRest.TokenizerApplication.*;
 
 @RestController
-@EnableWebMvc
 @RequestMapping("/tokenizer")
 @Api(value="Tokenization REST API.", description="API operationd supported for tokenization system.")
 @ApiResponses(value = {
