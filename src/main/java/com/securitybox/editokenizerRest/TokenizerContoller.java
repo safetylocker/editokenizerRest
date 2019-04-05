@@ -170,7 +170,7 @@ public class TokenizerContoller {
     // TOKENIZE single element
     //******************************************************************************************
     //Get a stored value of a token stored
-    @ApiOperation(value = "Tokenize a given value.",notes = "maxTokenLenght token lenght must be at least 32 characters for token generation.")
+    @ApiOperation(value = "Tokenize a given value.",notes = "maxTokenLenght must be at least 32 characters for token generation.")
     @RequestMapping(value = "/tokenize", method = RequestMethod.GET)
     @ResponseBody
     @ApiImplicitParam(name="value",example = "Value to be tokenized.")
