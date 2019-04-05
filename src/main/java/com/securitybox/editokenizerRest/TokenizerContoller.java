@@ -53,22 +53,19 @@ public class TokenizerContoller {
     //******************************************************************************************
     private String csvTokenizer(String input, JSONArray elementsToDeTokenize, String senderId, ArrayList receiverIdList,String csvRecordSeperator,String csvFieldSeperator,String operation){
         String response="";
+        if(csvRecordSeperator.equalsIgnoreCase(null))
+            csv.setRecordDelimeter("\n");
+        else
+            csv.setRecordDelimeter(csvRecordSeperator);
+
+        if(csvFieldSeperator.equals(null))
+            csv.setFieldDelimeter("|");
+        else
+            csv.setFieldDelimeter(csvFieldSeperator);
         try {
             if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_TOKENIZE)) {
-                if(csvRecordSeperator.equalsIgnoreCase(null))
-                    csv.setRecordDelimeter("\n");
-                else
-                    csv.setRecordDelimeter(csvRecordSeperator);
-
-                if(csvFieldSeperator.equals(null))
-                    csv.setFieldDelimeter("|");
-                else
-                    csv.setFieldDelimeter(csvFieldSeperator);
-
                 response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE, elementsToDeTokenize, input, senderId, receiverIdList);
             }else if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_DETOKENIZE)){
-                csv.setRecordDelimeter("\n");
-                csv.setFieldDelimeter(":");
                 response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_DETOKENIZE,elementsToDeTokenize,input,senderId,receiverIdList);
             }
 
