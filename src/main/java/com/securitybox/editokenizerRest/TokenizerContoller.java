@@ -51,12 +51,20 @@ public class TokenizerContoller {
     //******************************************************************************************
     // TOKENIZE CSV Documents
     //******************************************************************************************
-    private String csvTokenizer(String input, JSONArray elementsToDeTokenize, String senderId, ArrayList receiverIdList,String operation){
+    private String csvTokenizer(String input, JSONArray elementsToDeTokenize, String senderId, ArrayList receiverIdList,String csvRecordSeperator,String csvFieldSeperator,String operation){
         String response="";
         try {
             if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_TOKENIZE)) {
-                csv.setRecordDelimeter("\n");
-                csv.setFieldDelimeter(":");
+                if(csvRecordSeperator.equalsIgnoreCase(null))
+                    csv.setRecordDelimeter("\n");
+                else
+                    csv.setRecordDelimeter(csvRecordSeperator);
+
+                if(csvFieldSeperator.equals(null))
+                    csv.setFieldDelimeter("|");
+                else
+                    csv.setFieldDelimeter(csvFieldSeperator);
+
                 response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_TOKENIZE, elementsToDeTokenize, input, senderId, receiverIdList);
             }else if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_DETOKENIZE)){
                 csv.setRecordDelimeter("\n");
@@ -95,6 +103,8 @@ public class TokenizerContoller {
                                       @RequestParam(value="SenderId",required = true) String senderId,
                                       @RequestParam(value="ReceiverIds",required = false) ArrayList receiverIdList,
                                       @RequestParam(value="MessageType",required = true) String messageType,
+                                      @RequestParam(value="csvRecordSeperator",required = false) String csvRecordSeperator,
+                                      @RequestParam(value="csvFieldSeperator",required = false) String csvFieldSeperator,
                                       @RequestBody() String document ) {
 
         //call EDIFACT rokenizer service..
@@ -103,7 +113,7 @@ public class TokenizerContoller {
                     String.format(template, EdifactTokenizer(document, elementsToTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
         }else if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_CSV)){
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template, csvTokenizer(document, elementsToTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_TOKENIZE)));
+                    String.format(template, csvTokenizer(document, elementsToTokenize, senderId, receiverIdList,csvRecordSeperator,csvFieldSeperator, Constants.TOKENIZER_METHOD_TOKENIZE)));
         }else{
             return new TokenizerDocument(counter.incrementAndGet(),
                     String.format(template,"Tokenization falure. Please verify the request and parameters are valid."));
@@ -135,6 +145,8 @@ public class TokenizerContoller {
             @RequestParam(value="SenderId",required = true) String senderId,
             @RequestParam(value="ReceiverIds",required = false) ArrayList receiverIdList,
             @RequestParam(value="MessageType",required = true) String messageType,
+            @RequestParam(value="csvRecordSeperator",required = false) String csvRecordSeperator,
+            @RequestParam(value="csvFieldSeperator",required = false) String csvFieldSeperator,
             @RequestBody(required = true) String document) {
 
         //log for debugging...
@@ -149,7 +161,7 @@ public class TokenizerContoller {
                     String.format(template, EdifactTokenizer(document, elementsToDeTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
         }else if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_CSV)){
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template, csvTokenizer(document, elementsToDeTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
+                    String.format(template, csvTokenizer(document, elementsToDeTokenize, senderId, receiverIdList,csvRecordSeperator,csvFieldSeperator, Constants.TOKENIZER_METHOD_TOKENIZE)));
 
         } else {
             return new TokenizerDocument(counter.incrementAndGet(),
