@@ -237,14 +237,14 @@ public class TokenizerContoller {
     @ApiOperation(value = "Request a token to be deleted.")
     @RequestMapping(value = "/token", method = RequestMethod.DELETE,produces = "application/json")
     @ResponseBody
-    public boolean deleteToken(
+    public TokenizerDocument deleteToken(
             @RequestParam("token") String token,
             @RequestParam(value="SenderId",required = true) String senderId
 
 
     )
     {
-        return  simpleTokenizer.tokenizer.removeToken(token);
+        return  new TokenizerDocument(counter.incrementAndGet(),String.valueOf(simpleTokenizer.tokenizer.removeToken(token)));
     }
 
     //******************************************************************************************
@@ -254,12 +254,12 @@ public class TokenizerContoller {
     @ApiOperation(value = "Request to remove the content from token entry.")
     @RequestMapping(value = "/removeTokenEntry", method = RequestMethod.GET,produces = "application/json")
     @ResponseBody
-    public boolean removeTokenEntry(
+    public TokenizerDocument removeTokenEntry(
             @RequestParam("token") String token,
             @RequestParam(value="SenderId",required = true) String senderId
     )
     {
-        return  simpleTokenizer.tokenizer.removeTokenEntry(token,senderId);
+        return  new TokenizerDocument(counter.incrementAndGet(),String.valueOf(simpleTokenizer.tokenizer.removeTokenEntry(token,senderId)));
     }
 
     //******************************************************************************************
