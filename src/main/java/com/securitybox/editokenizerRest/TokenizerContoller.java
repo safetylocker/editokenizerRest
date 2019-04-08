@@ -155,10 +155,10 @@ public class TokenizerContoller {
         //call EDIFACT rokenizer service..
         if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_EDIFACT)) {
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template, EdifactTokenizer(document, elementsToDeTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
+                    String.format(template, EdifactTokenizer(java.net.URLDecoder.decode(document), elementsToDeTokenize, senderId, receiverIdList, Constants.TOKENIZER_METHOD_DETOKENIZE)));
         }else if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_CSV)){
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template, csvTokenizer(document, elementsToDeTokenize, senderId, receiverIdList,csvRecordSeperator,csvFieldSeperator, Constants.TOKENIZER_METHOD_TOKENIZE)));
+                    String.format(template, csvTokenizer(java.net.URLDecoder.decode(document), elementsToDeTokenize, senderId, receiverIdList,csvRecordSeperator,csvFieldSeperator, Constants.TOKENIZER_METHOD_TOKENIZE)));
 
         } else {
             return new TokenizerDocument(counter.incrementAndGet(),
@@ -197,6 +197,8 @@ public class TokenizerContoller {
 
     }
 
+
+
     //******************************************************************************************
     // DE-TOKENIZE single element
     //******************************************************************************************
@@ -208,9 +210,16 @@ public class TokenizerContoller {
             @RequestParam(value="SenderId",required = true) String senderId
         )
     {
-        String response = null;
+        String response = "";
         try {
             response = simpleTokenizer.deTokenizeSingleValue(Constants.TOKENIZER_METHOD_DETOKENIZE,token,senderId,null);
+            if(response==null) {
+                return new TokenizerDocument(counter.incrementAndGet(),
+                        String.format(template, "Token Not Found"));
+            }else {
+                return new TokenizerDocument(counter.incrementAndGet(),
+                        String.format(template, response));
+            }
 
         } catch (JSONException e) {
             return new TokenizerDocument(counter.incrementAndGet(),
@@ -219,12 +228,38 @@ public class TokenizerContoller {
             return new TokenizerDocument(counter.incrementAndGet(),
                     String.format(template,"Token Not Found"));
         }
-        if(response.equalsIgnoreCase(token))
-            return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template,"Token Not Found"));
-        else
-            return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template,response));
+    }
+
+    //******************************************************************************************
+    // Access log method
+    //******************************************************************************************
+    //Get access logs of a given token
+    @ApiOperation(value = "Request a token to be deleted.")
+    @RequestMapping(value = "/token", method = RequestMethod.DELETE,produces = "application/json")
+    @ResponseBody
+    public boolean deleteToken(
+            @RequestParam("token") String token,
+            @RequestParam(value="SenderId",required = true) String senderId
+
+
+    )
+    {
+        return  simpleTokenizer.tokenizer.removeToken(token);
+    }
+
+    //******************************************************************************************
+    // Remove token content method
+    //******************************************************************************************
+    //Get access logs of a given token
+    @ApiOperation(value = "Request to remove the content from token entry.")
+    @RequestMapping(value = "/removeTokenEntry", method = RequestMethod.GET,produces = "application/json")
+    @ResponseBody
+    public boolean removeTokenEntry(
+            @RequestParam("token") String token,
+            @RequestParam(value="SenderId",required = true) String senderId
+    )
+    {
+        return  simpleTokenizer.tokenizer.removeTokenEntry(token,senderId);
     }
 
     //******************************************************************************************
