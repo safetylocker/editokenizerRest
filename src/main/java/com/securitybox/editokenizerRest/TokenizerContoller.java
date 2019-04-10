@@ -68,8 +68,6 @@ public class TokenizerContoller {
             }else if(operation.equalsIgnoreCase(Constants.TOKENIZER_METHOD_DETOKENIZE)){
                 response = csv.docuemntHandler(Constants.TOKENIZER_METHOD_DETOKENIZE,elementsToDeTokenize,input,senderId,receiverIdList);
             }
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -170,25 +168,19 @@ public class TokenizerContoller {
     // TOKENIZE single element
     //******************************************************************************************
     //Get a stored value of a token stored
-    @ApiOperation(value = "Tokenize a given value.",notes = "maxTokenLenght must be at least 32 characters for token generation.")
+    @ApiOperation(value = "Tokenize a given value.")
     @RequestMapping(value = "/tokenize", method = RequestMethod.GET)
     @ResponseBody
     @ApiImplicitParam(name="value",example = "Value to be tokenized.")
     public TokenizerDocument createTokenValue(
             @RequestParam(value = "value",required = true) String value,
             @RequestParam(value="SenderId",required = true) String senderId,
-            @RequestParam(value = "maxTokenLenght",required = false) Integer maxTokenLenght)
-    {
+            @RequestParam(value = "maxTokenLenght",required = false,defaultValue = "0") Integer maxTokenLenght){
         try {
             //check the macimum value support by client for the token
             //Value must be least 32 chars to support the MD-5 algoritm, thus request is reqjected
-            if(maxTokenLenght < 32){
-                return new TokenizerDocument(counter.incrementAndGet(),
-                        String.format(template,"Token length must be at least 32 characters for token generation..."));
-            } else {
-                return new TokenizerDocument(counter.incrementAndGet(),
-                        String.format(template,simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE, value, senderId, null, maxTokenLenght)));
-            }
+            return new TokenizerDocument(counter.incrementAndGet(),
+                    String.format(template,simpleTokenizer.tokenizeSingleValue(Constants.TOKENIZER_METHOD_TOKENIZE, value, senderId, null, maxTokenLenght)));
         } catch (Exception e) {
             e.printStackTrace();
             return new TokenizerDocument(counter.incrementAndGet(),
@@ -207,9 +199,7 @@ public class TokenizerContoller {
     @RequestMapping(value = "/de-tokenize", method = RequestMethod.GET, produces = "application/json")
     public TokenizerDocument getTokenValue(
             @RequestParam("token") String token,
-            @RequestParam(value="SenderId",required = true) String senderId
-        )
-    {
+            @RequestParam(value="SenderId",required = true) String senderId){
         String response = "";
         try {
             response = simpleTokenizer.deTokenizeSingleValue(Constants.TOKENIZER_METHOD_DETOKENIZE,token,senderId,null);
@@ -239,11 +229,7 @@ public class TokenizerContoller {
     @ResponseBody
     public TokenizerDocument deleteToken(
             @RequestParam("token") String token,
-            @RequestParam(value="SenderId",required = true) String senderId
-
-
-    )
-    {
+            @RequestParam(value="SenderId",required = true) String senderId){
         return  new TokenizerDocument(counter.incrementAndGet(),String.valueOf(simpleTokenizer.tokenizer.removeToken(token)));
     }
 
@@ -256,9 +242,7 @@ public class TokenizerContoller {
     @ResponseBody
     public TokenizerDocument removeTokenEntry(
             @RequestParam("token") String token,
-            @RequestParam(value="SenderId",required = true) String senderId
-    )
-    {
+            @RequestParam(value="SenderId",required = true) String senderId){
         return  new TokenizerDocument(counter.incrementAndGet(),String.valueOf(simpleTokenizer.tokenizer.removeTokenEntry(token,senderId)));
     }
 
@@ -271,13 +255,10 @@ public class TokenizerContoller {
     @ResponseBody
     public AuditResponse getAuditLogs(
             @RequestParam("token") String token,
-            @RequestParam(value="SenderId",required = true) String senderId
-
-
-    ) {
+            @RequestParam(value="SenderId",required = true) String senderId){
 
         return new AuditResponse(counter.incrementAndGet(),
-                simpleTokenizer.tokenizer.getAccessLogs(token)
+                simpleTokenizer.tokenizer.getAccessLogs(token,senderId)
         );
     }
 }
