@@ -238,7 +238,7 @@ public class TokenizerContoller {
     //******************************************************************************************
     //Get access logs of a given token
     @ApiOperation(value = "Request to remove the content from token entry.")
-    @RequestMapping(value = "/removeTokenEntry", method = RequestMethod.GET,produces = "application/json")
+    @RequestMapping(value = "/removeTokenEntry", method = RequestMethod.DELETE,produces = "application/json")
     @ResponseBody
     public TokenizerDocument removeTokenEntry(
             @RequestParam("token") String token,
