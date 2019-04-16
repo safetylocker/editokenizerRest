@@ -21,8 +21,11 @@ public class TokenizerApplication {
     public static SimpleTokenizer simpleTokenizer;
     public static void main(String[] args) {
         try {
+            //Initialize EDIFACT tokenizer.
             edifact = new EDIFACT();
+            //Initialize CSV tokenizer.
             csv = new CSV();
+            //Initialize Simple tokenizer.
             simpleTokenizer = new SimpleTokenizer();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

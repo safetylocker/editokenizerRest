@@ -23,6 +23,6 @@ public class Constants {
             + com.securitybox.constants.Constants.CSV_DATA_ELEMENT_POSITION + "\":1,\"" + com.securitybox.constants.Constants.CSV_DATA_ELEMENT_LENGTH + "\":30},{\""
             + com.securitybox.constants.Constants.CSV_DATA_ELEMENT_POSITION + "\":2,\"" + com.securitybox.constants.Constants.CSV_DATA_ELEMENT_LENGTH + "\":20}]";
     static final String elementsToDeTokenizeJsonExampleCSV="[{\""
-            + com.securitybox.constants.Constants.CSV_DATA_ELEMENT_POSITION + "\":1,{\"" + com.securitybox.constants.Constants.CSV_DATA_ELEMENT_POSITION + "\":2}]";
+            + com.securitybox.constants.Constants.CSV_DATA_ELEMENT_POSITION + "\":1},{\"" + com.securitybox.constants.Constants.CSV_DATA_ELEMENT_POSITION + "\":2}]";
 
 }
