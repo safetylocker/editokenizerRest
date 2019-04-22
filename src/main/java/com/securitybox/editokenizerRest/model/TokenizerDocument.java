@@ -1,4 +1,4 @@
-package com.securitybox.editokenizerRest;
+package com.securitybox.editokenizerRest.model;
 
 import io.swagger.annotations.ApiModelProperty;
 

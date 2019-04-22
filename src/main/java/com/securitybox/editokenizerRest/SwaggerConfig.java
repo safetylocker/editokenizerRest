@@ -50,7 +50,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                           "In addition, the service supports a client to get access/audit logs of tokenized elements.",
                 mainPackage.getImplementationVersion() /*+"-"+ properties.getProperty("version")*/,
                 "This is non-commercial version available for public use.",
-                new Contact("Safety Locker", "www.safetylocker.eu", "tokenizer@safetylocker.eu"),
+                new Contact("Safety Locker", "http://safetylocker.eu", "tokenizer@safetylocker.eu"),
                 "General Public License", "www.safetylocker.eu/license", Collections.emptyList());
     }
     @Override

@@ -7,12 +7,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.securitybox.constants.Constants;
 import com.securitybox.editokenizerRest.model.AuditResponse;
+import com.securitybox.editokenizerRest.model.TokenizerDocument;
 import com.securitybox.storage.AccessEntry;
 import io.swagger.annotations.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static com.securitybox.editokenizerRest.TokenizerApplication.*;
 
