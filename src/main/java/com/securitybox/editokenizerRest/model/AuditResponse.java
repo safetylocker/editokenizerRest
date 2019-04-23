@@ -2,7 +2,7 @@ package com.securitybox.editokenizerRest.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.securitybox.storage.AccessEntry;
+import com.securitybox.models.AccessEntry;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;

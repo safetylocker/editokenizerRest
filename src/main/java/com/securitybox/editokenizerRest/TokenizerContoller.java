@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.securitybox.constants.Constants;
 import com.securitybox.editokenizerRest.model.AuditResponse;
 import com.securitybox.editokenizerRest.model.TokenizerDocument;
-import com.securitybox.storage.AccessEntry;
+import com.securitybox.models.AccessEntry;
 import io.swagger.annotations.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,7 +18,7 @@ import static com.securitybox.editokenizerRest.TokenizerApplication.*;
 
 @RestController
 @RequestMapping("/tokenizer")
-@Api(value="Tokenization REST API.", description="API operationd supported for tokenization system.")
+@Api(value="Tokenization REST API.", description="API operations supported.")
 @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Request Success"),
         @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -85,7 +85,7 @@ public class TokenizerContoller {
                     "\n\n4)Sample array of items to tokenize(CSV)  : \n" +
                     "-------------------------------------------\n" + com.securitybox.editokenizerRest.Constants.elementsToTokenizeJsonCSV
     )
-    @ApiImplicitParam(name="MessageType",example = "EDIFACT OR CSV")
+    @ApiImplicitParam(name="MessageType",example = "EDIFACT/CSV")
     public TokenizerDocument tokenize(@RequestParam(value="ElementsToTokenize",required = true) JSONArray elementsToTokenize,
                                       @RequestParam(value="SenderId",required = true) String senderId,
                                       @RequestParam(value="ReceiverIds",required = false) ArrayList<String> receiverIdList,

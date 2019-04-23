@@ -45,11 +45,10 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         }*/
         return new ApiInfo(
                 "Electronic Document Tokenization Service",
-                "This is an API service to tokenize electronic form of documents. EDIFACT and CSV are currently supported. " +
-                          "The service supports tokenization and de-tokenization of EDIFACT/CSV messages given the elements to be tokenized. The service also consists of single element tokenization/de-tokenization API to handle the client needs." +
-                          "In addition, the service supports a client to get access/audit logs of tokenized elements.",
+                "This is an API service to tokenize/de-tokenize an electronic form of documents or a single given element." +
+                          "The service enables to clients to get acces/audit logs of the created token with added services to token management. ",
                 mainPackage.getImplementationVersion() /*+"-"+ properties.getProperty("version")*/,
-                "This is non-commercial version available for public use.",
+                "This is non-commercial evaluation version available for public use.",
                 new Contact("Safety Locker", "http://safetylocker.eu", "tokenizer@safetylocker.eu"),
                 "General Public License", "www.safetylocker.eu/license", Collections.emptyList());
     }
