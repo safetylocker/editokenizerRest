@@ -49,7 +49,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                           "The service enables to clients to get acces/audit logs of the created token with added services to token management. ",
                 mainPackage.getImplementationVersion() /*+"-"+ properties.getProperty("version")*/,
                 "This is non-commercial evaluation version available for public use.",
-                new Contact("Safety Locker", "http://safetylocker.eu", "tokenizer@safetylocker.eu"),
+                new Contact("Safety Locker", "https://safetylocker.blogspot.com/2019/04/electronic-message-transfer-and.html", "kkulathilake@gmail.com"),
                 "General Public License", "www.safetylocker.eu/license", Collections.emptyList());
     }
     @Override
