@@ -141,9 +141,9 @@ public class TokenizerContoller {
             @RequestBody(required = true) String document) {
 
         //log for debugging...
-        System.out.println("Receieved Message : " + document);
-        System.out.println("Receieved elemnts to be de-tokenized : " + elementsToDeTokenize);
-        System.out.println("Receieved sender id : " + senderId);
+        System.out.println("Received Message : " + document);
+        System.out.println("Received elements to be de-tokenized : " + elementsToDeTokenize);
+        System.out.println("Received sender id : " + senderId);
 
         //call EDIFACT rokenizer service..
         if(messageType.equalsIgnoreCase(Constants.DOCUMENT_TYPE_EDIFACT)) {
@@ -155,7 +155,7 @@ public class TokenizerContoller {
 
         } else {
             return new TokenizerDocument(counter.incrementAndGet(),
-                    String.format(template,"De-tokenization falure. Please verify the request and parameters are valid."));
+                    String.format(template,"De-tokenization failure. Please verify the request and parameters are valid."));
         }
     }
 
